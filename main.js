@@ -29,6 +29,10 @@ class Field {
                 break;
             } else if (this.isHat()) {
                 console.log('Congrats, you found your hat!');
+                console.log('Here is the path the validator took to find the hat:');
+                console.log(this._validatorPath.map(row => {
+                    return row.join('');
+                }).join('\n'));
                 playing = false;
                 break;
             }
@@ -106,12 +110,14 @@ class Field {
             console.log('Invalid field, generating new field...');
             return this.generateField(height, width, percentage);
         }
-        console.log('Valid field!');
+
         return field;
     }
 
     // Validate the field to make sure there is a path from the starting point to the hat.
     static validateField(field) {
+        // Set the starting point to the path character.
+        field[0][0] = pathCharacter;
         const seen = [];
         const path = [];
 
@@ -149,19 +155,21 @@ class Field {
 
         // Recursion - try all 4 directions
         for(let i = 0; i < dir.length; i++) {
-            const [x, y] = dir[i];
-            if(this.walk(field, {x: curr.x + x, y: curr.y + y}, seen, path)) {
+            const [y, x] = dir[i];
+            if(this.walk(field, {y: curr.y + y, x: curr.x + x}, seen, path)) {
                 return true;
             }
         }
 
         // Post - Remove the current cell from the path.
         path.pop();
+
+        return false;
     }
 
 }
 
 // Create a new instance of the Field class, using the static method "generateField" to generate the field.
-const myfield = new Field(Field.generateField(10, 10, 0.2));
+const myfield = new Field(Field.generateField(10, 10, 0.3));
 // Call the "runGame" method on the new field instance.
 myfield.runGame();
