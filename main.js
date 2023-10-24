@@ -4,6 +4,7 @@ const hat = '^';
 const hole = 'O';
 const fieldCharacter = '░';
 const pathCharacter = '*';
+const dir = [[0, 1], [0, -1], [1, 0], [-1, 0]];
 
 class Field {
     constructor(field) {
@@ -101,7 +102,62 @@ class Field {
             hatLocation.y = Math.floor(Math.random() * height);
         }
         field[hatLocation.y][hatLocation.x] = hat;
+        if(!this.validateField(field)) {
+            console.log('Invalid field, generating new field...');
+            return this.generateField(height, width, percentage);
+        }
+        console.log('Valid field!');
         return field;
+    }
+
+    // Validate the field to make sure there is a path from the starting point to the hat.
+    static validateField(field) {
+        const seen = [];
+        const path = [];
+
+        for (let i = 0; i < field.length; i++) {
+            seen.push(new Array(field[0].length).fill(false));
+        }
+
+        this.walk(field, {x: 0, y: 0}, seen, path);
+        console.log(path);
+        return path.length !== 0;
+    }
+
+    // Walk the field using recursion.
+    static walk(field, curr, seen, path) {
+        if(curr.x < 0 || curr.y < 0 || curr.x >= field[0].length || curr.y >= field.length) {
+            return false;
+        } 
+        
+        if(field[curr.y][curr.x] === hole) {
+            return false;
+        }
+
+        if(field[curr.y][curr.x] === hat) {
+            path.push(curr);
+            return true;
+        }
+
+        if(seen[curr.y][curr.x]) {
+            return false;
+        }
+
+        // 3 steps of recursion
+        // Pre - mark the current cell as seen and add it to the path
+        seen[curr.y][curr.x] = true;
+        path.push(curr);
+
+        // Recursion - try all 4 directions
+        for(let i = 0; i < dir.length; i++) {
+            const [x, y] = dir[i];
+            if(this.walk(field, {x: curr.x + x, y: curr.y + y}, seen, path)) {
+                return true;
+            }
+        }
+
+        // Post - Remove the current cell from the path.
+        path.pop();
     }
 
 }
