@@ -16,3 +16,5 @@ npm start to run the program.
 The following packages are required for this script to work.
 - prompt-sync
 
+### Features
+Automatic field generation with a validator. The validator uses recursion to walk through the field and solve the puzzle.
