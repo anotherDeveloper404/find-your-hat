@@ -120,7 +120,6 @@ class Field {
         }
 
         this.walk(field, {x: 0, y: 0}, seen, path);
-        console.log(path);
         return path.length !== 0;
     }
 
